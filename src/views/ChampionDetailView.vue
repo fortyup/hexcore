@@ -6,6 +6,7 @@ import SkinGallery from '../components/SkinGallery.vue';
 import SkinPreview from '../components/SkinPreview.vue';
 import AbilityShowcase from '../components/AbilityShowcase.vue';
 import RoleIcon from '../components/RoleIcon.vue';
+import ChampionCard from '../components/ChampionCard.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -245,23 +246,12 @@ const relatedChampions = computed(() => {
       <div v-if="relatedChampions.length" class="related-section animate-item delay-7">
         <h3 class="section-title">Related Champions</h3>
         <div class="related-grid">
-          <router-link 
-            v-for="(related, index) in relatedChampions" 
+          <ChampionCard
+            v-for="(related, index) in relatedChampions"
             :key="related.id"
-            :to="{ name: 'champion-detail', params: { id: related.id } }"
-            class="related-card"
-            :style="{ animationDelay: `${index * 100}ms` }"
-          >
-            <div class="card-border"></div>
-            <div class="image-wrapper">
-              <img :src="riotApi.getChampionImageUrl(related.id)" :alt="related.name" />
-              <div class="shine"></div>
-            </div>
-            <div class="related-info">
-              <span class="related-name">{{ related.name }}</span>
-              <span class="related-tags">{{ related.tags.join(' / ') }}</span>
-            </div>
-          </router-link>
+            :champion="related"
+            :index="index"
+          />
         </div>
       </div>
     </div>
@@ -572,123 +562,7 @@ const relatedChampions = computed(() => {
 
 .related-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: var(--spacing-md);
-}
-
-.related-card {
-  position: relative;
-  overflow: hidden;
-  border-radius: 8px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: #0a0a0a;
-  padding: 1px; /* Space for animated border */
-  display: flex;
-  flex-direction: column;
-}
-
-.card-border {
-  position: absolute;
-  inset: 0;
-  border-radius: 8px;
-  background: linear-gradient(
-    var(--angle, 0deg),
-    transparent 0%,
-    rgba(0, 44, 253, 0.2) 20%,
-    var(--color-accent-blue) 50%,
-    rgba(0, 44, 253, 0.2) 80%,
-    transparent 100%
-  );
-  animation: rotate-border 4s linear infinite;
-  opacity: 0.3;
-  transition: opacity 0.3s ease;
-}
-
-@property --angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
-@keyframes rotate-border {
-  to { --angle: 360deg; }
-}
-
-.related-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 15px 35px rgba(0, 44, 253, 0.3);
-}
-
-.related-card:hover .card-border {
-  opacity: 1;
-}
-
-.related-card .image-wrapper {
-  position: relative;
-  aspect-ratio: 308/560;
-  overflow: hidden;
-  border-radius: 7px;
-}
-
-.related-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), filter 0.6s ease;
-  filter: grayscale(60%) brightness(0.8);
-}
-
-.related-card:hover img {
-  transform: scale(1.1);
-  filter: grayscale(0%) brightness(1);
-}
-
-/* Shine effect */
-.shine {
-  position: absolute;
-  top: 0;
-  left: -150%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.15),
-    transparent
-  );
-  transform: skewX(-25deg);
-  transition: left 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-  pointer-events: none;
-  z-index: 5;
-}
-
-.related-card:hover .shine {
-  left: 150%;
-}
-
-.related-info {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: var(--spacing-md);
-  background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-}
-
-.related-name {
-  display: block;
-  font-family: var(--font-heading);
-  font-size: 1.2rem;
-  color: #fff;
-  font-style: italic;
-}
-
-.related-tags {
-  display: block;
-  font-size: 0.75rem;
-  color: #888;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-top: 4px;
 }
 </style>
