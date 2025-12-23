@@ -21,11 +21,6 @@ const router = createRouter({
       component: () => import('../views/SkinsView.vue')
     },
     {
-      path: '/skin/:championId/:skinNum',
-      name: 'skin-preview',
-      component: () => import('../views/SkinPreviewView.vue')
-    },
-    {
       path: '/champion/:id',
       name: 'champion-detail',
       component: ChampionDetailView

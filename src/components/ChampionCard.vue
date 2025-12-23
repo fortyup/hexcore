@@ -37,9 +37,10 @@ onMounted(() => {
 
 // 3D Tilt effect
 const handleMouseMove = (e) => {
-  if (!cardRef.value) return;
+  const target = e.currentTarget;
+  if (!target || typeof target.getBoundingClientRect !== 'function') return;
   
-  const rect = cardRef.value.getBoundingClientRect();
+  const rect = target.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
   

@@ -1,6 +1,9 @@
 <script setup>
+import { useRoute } from 'vue-router'
 import AppHeader from './components/AppHeader.vue'
 import AppFooter from './components/AppFooter.vue'
+
+const route = useRoute()
 </script>
 
 <template>
@@ -9,8 +12,8 @@ import AppFooter from './components/AppFooter.vue'
     <main class="main-content">
       <div class="container">
         <router-view v-slot="{ Component }">
-          <transition name="page" mode="out-in">
-            <component :is="Component" />
+          <transition name="page" mode="default">
+            <component :is="Component" :key="route.fullPath" />
           </transition>
         </router-view>
       </div>
