@@ -447,13 +447,6 @@ const relatedChampions = computed(() => {
   cursor: default;
 }
 
-.tag:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
 .tag-text {
   text-transform: uppercase;
   font-family: var(--font-heading);
@@ -463,7 +456,7 @@ const relatedChampions = computed(() => {
 }
 
 
-.tag:hover .tag-text {
+.tag-text {
   color: #fff;
 }
 

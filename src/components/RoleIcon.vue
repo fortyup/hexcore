@@ -37,7 +37,6 @@ const accessibleRole = computed(() => props.role ?? 'role');
     :aria-label="accessibleRole"
   >
     <img :src="roleConfig.icon" :alt="accessibleRole" loading="lazy" />
-    <div class="glow"></div>
   </div>
 </template>
 
@@ -58,15 +57,5 @@ const accessibleRole = computed(() => props.role ?? 'role');
   height: 100%;
   object-fit: contain;
   filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.35));
-}
-
-.glow {
-  position: absolute;
-  inset: -4px;
-  background: var(--role-color);
-  filter: blur(8px);
-  opacity: 0.2;
-  border-radius: 50%;
-  z-index: -1;
 }
 </style>
