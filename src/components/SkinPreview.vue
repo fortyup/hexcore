@@ -1,5 +1,6 @@
 <script setup>
 import { computed, watch, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
 
 const props = defineProps({
   open: {
@@ -18,6 +19,11 @@ const props = defineProps({
     type: String,
     default: ''
   }
+  ,
+  showChampionLink: {
+    type: Boolean,
+    default: true
+  }
 });
 
 const emit = defineEmits(['close']);
@@ -33,6 +39,14 @@ const championTitle = computed(() => props.champion?.title || '');
 const championTags = computed(() => props.champion?.tags || []);
 const tagsDisplay = computed(() => championTags.value.length ? championTags.value.join(' / ') : '');
 const skinNumber = computed(() => props.skin?.num ?? null);
+const router = useRouter();
+const championId = computed(() => props.champion?.id || props.skin?.championId || null);
+
+const goToChampionDetail = () => {
+  if (!championId.value) return;
+  router.push({ name: 'champion-detail', params: { id: championId.value } });
+  emit('close');
+};
 
 const handleKeydown = (event) => {
   if (event.key === 'Escape') {
@@ -88,6 +102,14 @@ onUnmounted(() => {
           <div class="preview-actions">
             <button class="preview-action-btn" type="button" @click="emit('close')">
               Close preview
+            </button>
+            <button
+              v-if="showChampionLink && championId"
+              class="preview-action-btn"
+              type="button"
+              @click="goToChampionDetail"
+            >
+              Voir le champion
             </button>
             <slot name="actions"></slot>
           </div>

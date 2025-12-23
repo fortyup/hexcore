@@ -34,40 +34,6 @@ onMounted(() => {
     observer.observe(cardRef.value.$el);
   }
 });
-
-// 3D Tilt effect
-const handleMouseMove = (e) => {
-  const target = e.currentTarget;
-  if (!target || typeof target.getBoundingClientRect !== 'function') return;
-  
-  const rect = target.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-  
-  const centerX = rect.width / 2;
-  const centerY = rect.height / 2;
-  
-  const rotateX = (y - centerY) / 15;
-  const rotateY = (centerX - x) / 15;
-  
-  // Dynamic glow position
-  const glowX = (x / rect.width) * 100;
-  const glowY = (y / rect.height) * 100;
-
-  tiltStyle.value = {
-    transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`,
-    '--glow-x': `${glowX}%`,
-    '--glow-y': `${glowY}%`,
-  };
-};
-
-const handleMouseLeave = () => {
-  tiltStyle.value = {
-    transform: 'perspective(1000px) rotateX(0) rotateY(0) scale(1)',
-    '--glow-x': '50%',
-    '--glow-y': '50%',
-  };
-};
 </script>
 
 <template>
@@ -77,8 +43,6 @@ const handleMouseLeave = () => {
     class="champion-card"
     :class="{ 'is-visible': isVisible }"
     :style="tiltStyle"
-    @mousemove="handleMouseMove"
-    @mouseleave="handleMouseLeave"
   >
     <div class="image-wrapper">
       <img :src="imageUrl" :alt="champion.name" loading="lazy" />

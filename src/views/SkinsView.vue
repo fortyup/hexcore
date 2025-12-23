@@ -171,13 +171,7 @@ const handleSelect = (skin) => {
       :champion="previewChampion"
       :imageUrl="previewSkin ? previewSkin.imageUrl : ''"
       @close="closeSkinPreview"
-    >
-      <template #actions>
-        <button class="preview-action-btn" type="button" @click="goToChampionDetailFromPreview">
-          View champion detail
-        </button>
-      </template>
-    </SkinPreview>
+    />
   </div>
 </template>
 

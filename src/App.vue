@@ -1,9 +1,16 @@
 <script setup>
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import AppHeader from './components/AppHeader.vue'
 import AppFooter from './components/AppFooter.vue'
 
 const route = useRoute()
+const routeKey = computed(() => {
+  if (route.name === 'champion-detail') {
+    return route.path
+  }
+  return route.fullPath
+})
 </script>
 
 <template>
@@ -13,7 +20,7 @@ const route = useRoute()
       <div class="container">
         <router-view v-slot="{ Component }">
           <transition name="page" mode="default">
-            <component :is="Component" :key="route.fullPath" />
+            <component :is="Component" :key="routeKey" />
           </transition>
         </router-view>
       </div>

@@ -239,6 +239,7 @@ const relatedChampions = computed(() => {
         :skin="previewSkin"
         :champion="champion"
         :imageUrl="previewImageUrl"
+        :showChampionLink="false"
         @close="closeSkinPreview"
       />
 
