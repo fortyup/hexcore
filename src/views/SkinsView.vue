@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { riotApi } from '../services/riotApi';
 import SkinCard from '../components/SkinCard.vue';
 import SkinPreview from '../components/SkinPreview.vue';
+import { initAnimations } from '../utils/animations';
 
 const router = useRouter();
 const champions = ref([]);
@@ -66,6 +67,7 @@ onMounted(async () => {
     console.error(e);
   } finally {
     loading.value = false;
+    initAnimations();
   }
 });
 

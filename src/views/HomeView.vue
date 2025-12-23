@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted } from 'vue';
+import { initAnimations } from '../utils/animations';
 
 // Random styles for particles
 const getParticleStyle = (n) => {
@@ -19,6 +20,10 @@ const getParticleStyle = (n) => {
     background: n % 3 === 0 ? 'var(--color-accent-blue)' : n % 3 === 1 ? 'var(--color-accent-gold)' : '#fff'
   };
 };
+
+onMounted(() => {
+  initAnimations();
+});
 </script>
 
 <template>

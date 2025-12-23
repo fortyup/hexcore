@@ -2,6 +2,7 @@
 import { ref, onMounted, computed, watch } from 'vue';
 import { riotApi } from '../services/riotApi';
 import ChampionCard from '../components/ChampionCard.vue';
+import { initAnimations } from '../utils/animations';
 
 const champions = ref([]);
 const loading = ref(true);
@@ -26,6 +27,7 @@ onMounted(async () => {
     console.error(e);
   } finally {
     loading.value = false;
+    initAnimations();
   }
 });
 
