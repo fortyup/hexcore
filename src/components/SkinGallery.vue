@@ -12,6 +12,12 @@ const props = defineProps({
   }
 });
 
+const emit = defineEmits(['select']);
+
+const handleSkinClick = (skin) => {
+  emit('select', skin);
+};
+
 </script>
 
 <template>
@@ -20,8 +26,12 @@ const props = defineProps({
     <div class="scroll-container">
       <div 
         v-for="skin in skins" 
-        :key="skin.id" 
+        :key="skin.id ?? skin.num"
         class="skin-item"
+        tabindex="0"
+        role="button"
+        @click="handleSkinClick(skin)"
+        @keyup.enter.prevent="handleSkinClick(skin)"
       >
         <div class="skin-image">
           <img :src="riotApi.getSkinImageUrl(championId, skin.num)" :alt="skin.name" loading="lazy" />
@@ -74,10 +84,16 @@ const props = defineProps({
   position: relative;
   transition: transform 0.3s ease;
   cursor: pointer;
+  outline: none;
 }
 
 .skin-item:hover {
   transform: scale(1.02);
+}
+
+.skin-item:focus-visible {
+  outline: 2px solid var(--color-accent-blue);
+  outline-offset: 6px;
 }
 
 .skin-image {

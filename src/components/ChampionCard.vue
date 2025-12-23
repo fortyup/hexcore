@@ -112,7 +112,7 @@ const handleMouseLeave = () => {
 
 .champion-card:hover {
   border-color: var(--color-accent-gold);
-  box-shadow: 0 20px 40px rgba(0, 44, 253, 0.25);
+  box-shadow: 0 20px 40px rgba(203, 173, 144, 0.3);
   z-index: 10;
 }
 

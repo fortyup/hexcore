@@ -1,8 +1,9 @@
 <script setup>
-import { ref, onMounted, computed, onUnmounted } from 'vue';
+import { ref, onMounted, computed, onUnmounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { riotApi } from '../services/riotApi';
 import SkinGallery from '../components/SkinGallery.vue';
+import SkinPreview from '../components/SkinPreview.vue';
 import AbilityShowcase from '../components/AbilityShowcase.vue';
 import RoleIcon from '../components/RoleIcon.vue';
 
@@ -13,6 +14,64 @@ const allChampions = ref([]);
 const loading = ref(true);
 const isVisible = ref(false);
 const parallaxOffset = ref(0);
+const previewSkin = ref(null);
+
+const previewImageUrl = computed(() => {
+  if (!previewSkin.value || !champion.value) return '';
+  return riotApi.getSkinImageUrl(champion.value.id, previewSkin.value.num);
+});
+
+const updateSkinQueryParam = (skinNum) => {
+  const target = skinNum != null ? String(skinNum) : undefined;
+  const current = route.query.skin;
+  const alreadyMatching = (target === undefined && current === undefined) || (target !== undefined && target === current);
+  if (alreadyMatching) return;
+  const nextQuery = { ...route.query };
+  if (target === undefined) {
+    delete nextQuery.skin;
+  } else {
+    nextQuery.skin = target;
+  }
+  router.replace({ name: 'champion-detail', params: { id: route.params.id }, query: nextQuery });
+};
+
+const applySkinQuery = () => {
+  if (!champion.value) {
+    previewSkin.value = null;
+    return;
+  }
+  const skinParam = route.query.skin;
+  if (!skinParam) {
+    previewSkin.value = null;
+    return;
+  }
+  const skinNum = Number(skinParam);
+  if (!Number.isFinite(skinNum)) {
+    previewSkin.value = null;
+    updateSkinQueryParam(null);
+    return;
+  }
+  const matchingSkin = champion.value.skins?.find(skin => skin.num === skinNum);
+  if (matchingSkin) {
+    previewSkin.value = matchingSkin;
+  } else {
+    previewSkin.value = null;
+    updateSkinQueryParam(null);
+  }
+};
+
+const openSkinPreview = (skin, shouldUpdateQuery = true) => {
+  previewSkin.value = skin;
+  if (shouldUpdateQuery) {
+    updateSkinQueryParam(skin?.num);
+  }
+};
+
+const closeSkinPreview = () => {
+  if (!previewSkin.value) return;
+  previewSkin.value = null;
+  updateSkinQueryParam(null);
+};
 
 // Parallax scroll effect
 const handleScroll = () => {
@@ -22,6 +81,7 @@ const handleScroll = () => {
 const fetchChampionData = async (id) => {
   loading.value = true;
   isVisible.value = false;
+  previewSkin.value = null;
   
   try {
     const [championData, champList] = await Promise.all([
@@ -30,6 +90,7 @@ const fetchChampionData = async (id) => {
     ]);
     champion.value = championData;
     allChampions.value = champList;
+    applySkinQuery();
     
     // Trigger entrance animations
     setTimeout(() => {
@@ -50,11 +111,15 @@ onMounted(async () => {
   await fetchChampionData(route.params.id);
 });
 
-import { watch } from 'vue';
 watch(() => route.params.id, (newId) => {
   if (newId) {
     fetchChampionData(newId);
   }
+});
+
+watch(() => route.query.skin, () => {
+  if (!champion.value) return;
+  applySkinQuery();
 });
 
 onUnmounted(() => {
@@ -165,8 +230,16 @@ const relatedChampions = computed(() => {
       </div>
 
       <div class="animate-item delay-6">
-        <SkinGallery :championId="champion.id" :skins="champion.skins" />
+        <SkinGallery :championId="champion.id" :skins="champion.skins" @select="openSkinPreview" />
       </div>
+
+      <SkinPreview
+        :open="Boolean(previewSkin)"
+        :skin="previewSkin"
+        :champion="champion"
+        :imageUrl="previewImageUrl"
+        @close="closeSkinPreview"
+      />
 
       <!-- Related Champions -->
       <div v-if="relatedChampions.length" class="related-section animate-item delay-7">
@@ -397,6 +470,7 @@ const relatedChampions = computed(() => {
   letter-spacing: 0.1em;
   color: var(--color-text-secondary);
 }
+
 
 .tag:hover .tag-text {
   color: #fff;

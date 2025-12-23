@@ -3,6 +3,7 @@ import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { riotApi } from '../services/riotApi';
 import SkinCard from '../components/SkinCard.vue';
+import SkinPreview from '../components/SkinPreview.vue';
 
 const router = useRouter();
 const champions = ref([]);
@@ -11,6 +12,12 @@ const loading = ref(true);
 const searchQuery = ref(localStorage.getItem('skins_search') || '');
 
 const loadProgress = ref(0);
+const previewSkin = ref(null);
+
+const previewChampion = computed(() => {
+  if (!previewSkin.value) return null;
+  return champions.value.find(champ => champ.id === previewSkin.value.championId) || null;
+});
 
 // Save to localStorage on change
 watch(searchQuery, (val) => {
@@ -73,8 +80,26 @@ const filteredSkins = computed(() => {
 
 const skinCount = computed(() => allSkins.value.length);
 
+const openSkinPreview = (skin) => {
+  previewSkin.value = skin;
+};
+
+const closeSkinPreview = () => {
+  previewSkin.value = null;
+};
+
+const goToChampionDetailFromPreview = () => {
+  if (!previewSkin.value) return;
+  router.push({
+    name: 'champion-detail',
+    params: { id: previewSkin.value.championId },
+    query: { skin: previewSkin.value.skinNum }
+  });
+  closeSkinPreview();
+};
+
 const handleSelect = (skin) => {
-  router.push({ name: 'champion-detail', params: { id: skin.championId } });
+  openSkinPreview(skin);
 };
 </script>
 
@@ -137,6 +162,20 @@ const handleSelect = (skin) => {
         @select="handleSelect"
       />
     </div>
+
+    <SkinPreview
+      :open="Boolean(previewSkin)"
+      :skin="previewSkin"
+      :champion="previewChampion"
+      :imageUrl="previewSkin ? previewSkin.imageUrl : ''"
+      @close="closeSkinPreview"
+    >
+      <template #actions>
+        <button class="preview-action-btn" type="button" @click="goToChampionDetailFromPreview">
+          View champion detail
+        </button>
+      </template>
+    </SkinPreview>
   </div>
 </template>
 
