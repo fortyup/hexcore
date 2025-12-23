@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed, watch, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import { riotApi } from '../services/riotApi';
 import SkinCard from '../components/SkinCard.vue';
@@ -14,6 +14,10 @@ const searchQuery = ref(localStorage.getItem('skins_search') || '');
 
 const loadProgress = ref(0);
 const previewSkin = ref(null);
+const skinLoadIncrement = 40;
+const visibleSkinCount = ref(skinLoadIncrement);
+const skinSentinel = ref(null);
+const skinObserver = ref(null);
 
 const previewChampion = computed(() => {
   if (!previewSkin.value) return null;
@@ -78,6 +82,43 @@ const filteredSkins = computed(() => {
     s.championName.toLowerCase().includes(q) || 
     s.name.toLowerCase().includes(q)
   );
+});
+
+watch(filteredSkins, (value) => {
+  visibleSkinCount.value = Math.min(skinLoadIncrement, value.length || skinLoadIncrement);
+});
+
+const visibleSkins = computed(() => filteredSkins.value.slice(0, visibleSkinCount.value));
+
+const setupSkinObserver = () => {
+  if (skinObserver.value) {
+    skinObserver.value.disconnect();
+  }
+  skinObserver.value = new IntersectionObserver((entries) => {
+    if (!entries[0]?.isIntersecting) return;
+    if (visibleSkinCount.value >= filteredSkins.value.length) return;
+    visibleSkinCount.value = Math.min(
+      visibleSkinCount.value + skinLoadIncrement,
+      filteredSkins.value.length
+    );
+  }, { rootMargin: '200px' });
+};
+
+onMounted(() => {
+  setupSkinObserver();
+});
+
+watch(
+  [skinSentinel, skinObserver],
+  ([el, observer]) => {
+    if (!el || !observer) return;
+    observer.disconnect();
+    observer.observe(el);
+  }
+);
+
+onBeforeUnmount(() => {
+  skinObserver.value?.disconnect();
 });
 
 const skinCount = computed(() => allSkins.value.length);
@@ -157,13 +198,14 @@ const handleSelect = (skin) => {
 
     <div v-else class="skin-grid">
       <SkinCard 
-        v-for="(skin, index) in filteredSkins" 
+        v-for="(skin, index) in visibleSkins" 
         :key="skin.id"
         :skin="skin"
         :index="index"
         @select="handleSelect"
       />
     </div>
+    <div ref="skinSentinel" class="scroll-sentinel" aria-hidden="true"></div>
 
     <SkinPreview
       :open="Boolean(previewSkin)"
@@ -344,6 +386,10 @@ const handleSelect = (skin) => {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+.scroll-sentinel {
+  height: 1px;
 }
 
 .empty-state {

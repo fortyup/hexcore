@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed, watch, onBeforeUnmount } from 'vue';
 import { riotApi } from '../services/riotApi';
 import ChampionCard from '../components/ChampionCard.vue';
 import { initAnimations } from '../utils/animations';
@@ -10,6 +10,10 @@ const searchQuery = ref(localStorage.getItem('champions_search') || '');
 const selectedRole = ref(localStorage.getItem('champions_role') || 'All');
 
 const roles = ['All', 'Fighter', 'Tank', 'Mage', 'Assassin', 'Marksman', 'Support'];
+const championLoadIncrement = 20;
+const visibleChampionCount = ref(championLoadIncrement);
+const championSentinel = ref(null);
+const championObserver = ref(null);
 
 // Save to localStorage on change
 watch(searchQuery, (val) => {
@@ -44,6 +48,43 @@ const filteredChampions = computed(() => {
   }
   
   return results;
+});
+
+watch(filteredChampions, (value) => {
+  visibleChampionCount.value = Math.min(championLoadIncrement, value.length || championLoadIncrement);
+});
+
+const displayedChampions = computed(() => filteredChampions.value.slice(0, visibleChampionCount.value));
+
+const setupChampionObserver = () => {
+  if (championObserver.value) {
+    championObserver.value.disconnect();
+  }
+  championObserver.value = new IntersectionObserver((entries) => {
+    if (!entries[0]?.isIntersecting) return;
+    if (visibleChampionCount.value >= filteredChampions.value.length) return;
+    visibleChampionCount.value = Math.min(
+      visibleChampionCount.value + championLoadIncrement,
+      filteredChampions.value.length
+    );
+  }, { rootMargin: '200px' });
+};
+
+onMounted(() => {
+  setupChampionObserver();
+});
+
+watch(
+  [championSentinel, championObserver],
+  ([el, observer]) => {
+    if (!el || !observer) return;
+    observer.disconnect();
+    observer.observe(el);
+  }
+);
+
+onBeforeUnmount(() => {
+  championObserver.value?.disconnect();
 });
 
 const selectRole = (role) => {
@@ -114,12 +155,13 @@ const selectRole = (role) => {
 
     <div v-else class="champion-grid">
       <ChampionCard 
-        v-for="(champion, index) in filteredChampions" 
+        v-for="(champion, index) in displayedChampions" 
         :key="champion.id" 
         :champion="champion"
         :index="index"
       />
     </div>
+    <div ref="championSentinel" class="scroll-sentinel" aria-hidden="true"></div>
   </div>
 </template>
 
@@ -264,6 +306,10 @@ const selectRole = (role) => {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: var(--spacing-md);
+}
+
+.scroll-sentinel {
+  height: 1px;
 }
 
 .loading-state {

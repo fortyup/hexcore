@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 
 const isMenuOpen = ref(false);
 
@@ -10,6 +11,14 @@ const toggleMenu = () => {
 const closeMenu = () => {
   isMenuOpen.value = false;
 };
+
+const route = useRoute();
+watch(
+  () => route.fullPath,
+  () => {
+    closeMenu();
+  }
+);
 
 const handleNavClick = () => {
   try {
@@ -28,7 +37,7 @@ const handleNavClick = () => {
         <span class="logo-text">HEXCORE</span>
       </router-link>
       
-      <button class="menu-toggle" @click="toggleMenu" aria-label="Toggle menu">
+      <button class="menu-toggle" type="button" :aria-expanded="isMenuOpen" aria-label="Toggle menu" @click="toggleMenu">
         <span class="hamburger" :class="{ active: isMenuOpen }"></span>
       </button>
       
