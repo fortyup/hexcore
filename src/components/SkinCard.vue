@@ -16,38 +16,6 @@ const emit = defineEmits(['select']);
 
 const cardRef = ref(null);
 const isVisible = ref(false);
-const tiltStyle = ref({});
-
-const handleMouseMove = (e) => {
-  if (!cardRef.value) return;
-  
-  const rect = cardRef.value.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-  
-  const centerX = rect.width / 2;
-  const centerY = rect.height / 2;
-  
-  const rotateX = (y - centerY) / 10;
-  const rotateY = (centerX - x) / 20;
-  
-  const glowX = (x / rect.width) * 100;
-  const glowY = (y / rect.height) * 100;
-
-  tiltStyle.value = {
-    transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`,
-    '--glow-x': `${glowX}%`,
-    '--glow-y': `${glowY}%`,
-  };
-};
-
-const handleMouseLeave = () => {
-  tiltStyle.value = {
-    transform: 'perspective(1000px) rotateX(0) rotateY(0) scale(1)',
-    '--glow-x': '50%',
-    '--glow-y': '50%',
-  };
-};
 
 // Entry animation
 import { onMounted } from 'vue';
@@ -74,9 +42,6 @@ onMounted(() => {
     ref="cardRef"
     class="skin-card"
     :class="{ 'is-visible': isVisible }"
-    :style="tiltStyle"
-    @mousemove="handleMouseMove"
-    @mouseleave="handleMouseLeave"
     @click="emit('select', skin)"
   >
     <div class="skin-image">

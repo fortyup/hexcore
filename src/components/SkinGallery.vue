@@ -82,13 +82,8 @@ const handleSkinClick = (skin) => {
   flex: 0 0 300px;
   scroll-snap-align: start;
   position: relative;
-  transition: transform 0.3s ease;
   cursor: pointer;
   outline: none;
-}
-
-.skin-item:hover {
-  transform: scale(1.02);
 }
 
 .skin-item:focus-visible {
