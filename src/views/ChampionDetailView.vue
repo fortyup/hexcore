@@ -7,6 +7,7 @@ import SkinPreview from '../components/SkinPreview.vue';
 import AbilityShowcase from '../components/AbilityShowcase.vue';
 import RoleIcon from '../components/RoleIcon.vue';
 import ChampionCard from '../components/ChampionCard.vue';
+import StatsRadar from '../components/StatsRadar.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -190,35 +191,14 @@ const relatedChampions = computed(() => {
     </div>
 
     <div class="container content-section">
-      <!-- Animated Stats -->
-      <div class="stats-grid animate-item delay-4">
-        <div class="stat-box">
-          <span class="stat-label">Attack</span>
-          <div class="stat-bar">
-            <div class="fill" :style="{ width: isVisible ? `${champion.info.attack * 10}%` : '0%' }"></div>
-          </div>
-          <span class="stat-value">{{ champion.info.attack }}/10</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">Defense</span>
-          <div class="stat-bar">
-            <div class="fill defense" :style="{ width: isVisible ? `${champion.info.defense * 10}%` : '0%' }"></div>
-          </div>
-          <span class="stat-value">{{ champion.info.defense }}/10</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">Magic</span>
-          <div class="stat-bar">
-            <div class="fill magic" :style="{ width: isVisible ? `${champion.info.magic * 10}%` : '0%' }"></div>
-          </div>
-          <span class="stat-value">{{ champion.info.magic }}/10</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">Difficulty</span>
-          <div class="stat-bar">
-            <div class="fill difficulty" :style="{ width: isVisible ? `${champion.info.difficulty * 10}%` : '0%' }"></div>
-          </div>
-          <span class="stat-value">{{ champion.info.difficulty }}/10</span>
+      <!-- Stats Radar Diagram -->
+      <div class="stats-diagram animate-item delay-4">
+        <StatsRadar :stats="champion.info" :size="360" :visible="isVisible" />
+        <div class="stat-legend">
+          <div class="legend-item"><span class="dot attack"></span> Attack: {{ champion.info.attack }}/10</div>
+          <div class="legend-item"><span class="dot defense"></span> Defense: {{ champion.info.defense }}/10</div>
+          <div class="legend-item"><span class="dot magic"></span> Magic: {{ champion.info.magic }}/10</div>
+          <div class="legend-item"><span class="dot difficulty"></span> Difficulty: {{ champion.info.difficulty }}/10</div>
         </div>
       </div>
 
@@ -472,6 +452,42 @@ const relatedChampions = computed(() => {
 }
 
 /* Stats Grid */
+.stats-diagram {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.stat-legend {
+  width: 100%;
+  max-width: 720px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--spacing-sm);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-secondary);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.dot.attack { background: var(--color-accent-blue); color: var(--color-accent-blue); }
+.dot.defense { background: #27ae60; color: #27ae60; }
+.dot.magic { background: #9b59b6; color: #9b59b6; }
+.dot.difficulty { background: #e74c3c; color: #e74c3c; }
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
