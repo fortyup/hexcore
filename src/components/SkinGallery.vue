@@ -22,7 +22,7 @@ const handleSkinClick = (skin) => {
 
 <template>
   <div class="skin-gallery">
-    <h2 class="gallery-title">Skins</h2>
+    <h2 class="section-title">Skins</h2>
     <div class="scroll-container">
       <div 
         v-for="skin in skins" 
@@ -237,6 +237,25 @@ const handleSkinClick = (skin) => {
   margin-bottom: 0.5rem;
   text-transform: uppercase;
   text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+}
+
+.section-title {
+  font-size: 1rem;
+  letter-spacing: 0.3em;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-accent-gold);
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.section-title::after {
+  content: '';
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(90deg, var(--color-accent-gold), transparent);
+  opacity: 0.4;
 }
 
 /* Enhanced Hexcore Button */

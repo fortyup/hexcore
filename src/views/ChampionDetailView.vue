@@ -190,6 +190,7 @@ const relatedChampions = computed(() => {
       </div>
     </div>
 
+    <h2 class="section-title">STATISTICS</h2>
     <div class="container content-section">
       <!-- Stats Radar Diagram -->
       <div class="stats-diagram animate-item delay-4">
@@ -559,15 +560,28 @@ const relatedChampions = computed(() => {
 /* Related Champions */
 .related-section {
   margin-top: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
   padding-top: var(--spacing-xl);
   border-top: 1px solid rgba(255,255,255,0.1);
 }
 
 .section-title {
-  font-family: var(--font-heading);
-  font-size: 2rem;
-  margin-bottom: var(--spacing-lg);
-  font-style: italic;
+  font-size: 1rem;
+  letter-spacing: 0.3em;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-accent-gold);
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.section-title::after {
+  content: '';
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(90deg, var(--color-accent-gold), transparent);
+  opacity: 0.4;
 }
 
 .related-grid {
